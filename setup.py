@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='dlt_sources',
+    name='axaz_dlt_sources',
     version='0.1.0',
     author='Christoffer Kleven Berg',
     author_email='christoffer.kleven.berg@axaz.com',
