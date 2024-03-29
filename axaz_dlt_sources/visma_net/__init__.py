@@ -7,9 +7,9 @@ from datetime import datetime, timedelta
 
 @dlt.source(name='visma_net')
 def visma_net(
-    tenant_ids: List[str],
+    tenant_ids: List[str]=dlt.config.value,
     client_id: str=dlt.secrets.value,
-    client_secret:str=dlt.secrets.value
+    client_secret: str=dlt.secrets.value
 ) -> Sequence[DltResource]:
     """ Source for Visma NET ERP Service API
     """
