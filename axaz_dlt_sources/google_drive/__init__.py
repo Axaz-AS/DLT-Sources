@@ -87,7 +87,9 @@ def google_drive(
         write_disposition="merge",
         primary_key="id")
     def get_file_metadata():
+        files = []
         for file_id in file_ids:
-            yield client.get_file_metadata(file_id)
+            files.append(client.get_file_metadata(file_id))
+        yield files
 
     yield get_file_metadata
