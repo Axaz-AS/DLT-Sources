@@ -11,7 +11,8 @@ setup(
     long_description_content_type='text/markdown',
     install_requires=[
         'dlt',
-        'openpyxl'
+        'openpyxl',
+        'google-api-python-client'
     ],
     classifiers=[
         'Programming Language :: Python :: 3',
