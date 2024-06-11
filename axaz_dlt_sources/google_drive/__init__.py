@@ -57,7 +57,7 @@ def google_drive(
             file_id = file['id']
             # Store file id for metadata retrieval
             file_ids.append(file_id)
-            file_content = client.get_file_content(file_id).decode('utf-8')
+            file_content = client.get_file_content(file_id)
 
             try:
                 json_data = parse_function(file_content)
