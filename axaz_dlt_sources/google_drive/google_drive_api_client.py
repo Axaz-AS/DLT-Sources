@@ -71,7 +71,8 @@ class GoogleDriveClient:
     def get_file_metadata(self, file_id: str):
         response = (
             self.service.files()
-            .get(fileId=file_id)
+            .get(fileId=file_id,
+                 supportsAllDrives=True)
             .execute()
         )
         return response
