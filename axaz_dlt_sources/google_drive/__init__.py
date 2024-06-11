@@ -73,7 +73,7 @@ def google_drive(
         folder_id = folder['folder_id']
         table_name = folder['table_name']
         mime_type = folder['mime_type']
-        primary_key = folder['primary_key']
+        primary_key = folder.get('primary_key')
 
         yield dlt.resource(
             get_files(drive_id, folder_id, mime_type),
