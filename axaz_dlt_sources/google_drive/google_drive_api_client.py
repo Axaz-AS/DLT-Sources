@@ -85,7 +85,7 @@ class GoogleDriveClient:
         return response
 
     def parse_csv_to_json(self, csv_content: str):
-        csv_file = io.StringIO(csv_content)
+        csv_file = io.StringIO(csv_content.decode('utf-8'))
         reader = csv.DictReader(csv_file)
         json_data = [row for row in reader]
         return json_data
