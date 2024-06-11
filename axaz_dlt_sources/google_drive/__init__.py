@@ -33,7 +33,7 @@ def google_drive(
                 "lastModifiedDateTime", initial_value="1970-01-01T00:00:00Z"
             )
     ):
-        modified_since = datetime.strptime(updated_at)
+        modified_since = datetime.strptime(updated_at, '%Y-%m-%dT%H:%M:%SZ')
         files = client.list_files_in_folder(
             drive_id=drive_id,
             folder_id=folder_id,
