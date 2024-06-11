@@ -16,7 +16,7 @@ def google_drive(
     credentials: Union[
         GcpOAuthCredentials, GcpServiceAccountCredentials
     ] = dlt.secrets.value
-) -> Generator[DltResource]:
+) -> Generator[DltResource, None, None]:
     """ Source for Google Drive
     """
 
