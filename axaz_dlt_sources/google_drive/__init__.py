@@ -75,15 +75,17 @@ def google_drive(
         mime_type = folder['mime_type']
         primary_key = folder.get('primary_key')
 
+        print(folder)
+
         yield dlt.resource(
             get_files(drive_id, folder_id, mime_type),
-            table_name=table_name,
+            name=table_name,
             write_disposition="append",
             primary_key=primary_key
         )
 
     @dlt.resource(
-        table_name="file_metadata",
+        name="file_metadata",
         write_disposition="merge",
         primary_key="id")
     def get_file_metadata():
