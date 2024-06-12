@@ -64,9 +64,11 @@ def google_drive(
             except Exception as e:
                 raise ValueError(f"Error parsing file {file_id}: {e}")
 
-            # Adding file_id to each dictionary in the list
+            current_time_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
             for row in json_data:
                 row["file_id"] = file_id
+                row["row_inserted_at"] = current_time_str
 
             yield json_data
 

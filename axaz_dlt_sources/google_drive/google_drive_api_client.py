@@ -69,10 +69,13 @@ class GoogleDriveClient:
         return files
 
     def get_file_metadata(self, file_id: str):
+        fields = "id, name, fileExtension, mimeType, size, createdTime, modifiedTime, driveId, parents"
         response = (
             self.service.files()
             .get(fileId=file_id,
-                 supportsAllDrives=True)
+                 supportsAllDrives=True,
+                 fields=fields
+                 )
             .execute()
         )
         return response
