@@ -6,7 +6,10 @@ from dlt.sources import DltResource
 from dlt.sources.credentials import GcpOAuthCredentials, GcpServiceAccountCredentials
 
 from .google_drive_api_client import GoogleDriveClient
-from datetime import datetime
+from datetime import datetime, timezone
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @dlt.source(name='google_drive')
@@ -26,15 +29,23 @@ def google_drive(
 
     # Define dynamic resource function
     def get_files(
-            drive_id: str,
-            folder_id: str,
-            mime_type: str,
-            updated_at: str = dlt.sources.incremental(
-                "lastModifiedDateTime", initial_value="1970-01-01T00:00:00Z"
-            )
+        drive_id: str,
+        folder_id: str,
+        mime_type: str,
+        incremental_cursor=dlt.sources.incremental(
+            "modifiedTime", initial_value="1970-01-01T00:00:00Z"
+        )
     ):
-        modified_since = datetime.fromisoformat(
-            updated_at.start_value.rstrip("Z"))
+        """
+        Generator that fetches files from a specific folder.
+        dlt will automatically update the incremental state by finding the
+        maximum value of the 'modifiedTime' column in the yielded data.
+        """
+        last_modified_str = incremental_cursor.last_value
+        logger.info(f"Files last modified since: {last_modified_str}")
+
+        # Convert string from state to a datetime object for the API call
+        modified_since = datetime.fromisoformat(last_modified_str.replace("Z", "+00:00"))
 
         files = client.list_files_in_folder(
             drive_id=drive_id,
@@ -54,8 +65,9 @@ def google_drive(
                 f"No parsing function available for MIME type: {mime_type}")
 
         for file in files:
+            file_modified_time_str = file['modifiedTime']
             file_id = file['id']
-            # Store file id for metadata retrieval
+
             file_ids.append(file_id)
             file_content = client.get_file_content(file_id)
 
@@ -64,29 +76,27 @@ def google_drive(
             except Exception as e:
                 raise ValueError(f"Error parsing file {file_id}: {e}")
 
-            current_time_str = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-
+            # Add the cursor column to each row. dlt will use this to update the state.
             for row in json_data:
                 row["file_id"] = file_id
-                row["row_inserted_at"] = current_time_str
+                row["modifiedTime"] = file_modified_time_str
 
             yield json_data
 
-    # Yield a resource for each folder
     for folder in folders:
         folder_id = folder['folder_id']
         table_name = folder['table_name']
         mime_type = folder['mime_type']
-        primary_key = folder.get('primary_key')
+        primary_key = folder.get('primary_key') 
 
         print(folder)
 
         yield dlt.resource(
-            get_files(drive_id, folder_id, mime_type),
+            get_files,
             name=table_name,
             write_disposition="append",
             primary_key=primary_key
-        )
+        )(drive_id, folder_id, mime_type)
 
     @dlt.resource(
         name="file_metadata",
