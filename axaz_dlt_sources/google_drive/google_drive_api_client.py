@@ -13,11 +13,12 @@ from dlt.sources.credentials import GcpOAuthCredentials, GcpServiceAccountCreden
 
 class GoogleDriveClient:
 
-    def __init__(self, credentials: Union[GcpOAuthCredentials, GcpServiceAccountCredentials]):
-        if isinstance(credentials, GcpOAuthCredentials):
-            credentials.auth(
-                "https://www.googleapis.com/auth/drive"
-            )
+    def __init__(self, credentials):
+        #TODO: Fix the credentials handling
+        # if isinstance(credentials, GcpOAuthCredentials):
+        #     credentials.auth(
+        #         "https://www.googleapis.com/auth/drive"
+        #     )
 
         self.service = build(
             "drive",
