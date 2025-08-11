@@ -10,6 +10,15 @@ import openpyxl  # Added for xlsx parsing
 
 from dlt.sources.credentials import GcpOAuthCredentials, GcpServiceAccountCredentials
 
+import warnings
+
+# Suppress the specific UserWarning from openpyxl
+warnings.filterwarnings(
+    'ignore', 
+    category=UserWarning, 
+    module='openpyxl.styles.stylesheet'
+)
+
 
 class GoogleDriveClient:
 
@@ -53,7 +62,7 @@ class GoogleDriveClient:
                         includeItemsFromAllDrives=True,
                         supportsAllDrives=True,
                         driveId=drive_id,
-                        fields="nextPageToken, files(id, name, mimeType)",
+                        fields="nextPageToken, files(id, name, mimeType, modifiedTime)",
                         pageToken=page_token,
                     )
                     .execute()

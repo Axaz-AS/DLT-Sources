@@ -16,9 +16,7 @@ logger = logging.getLogger(__name__)
 def google_drive(
     drive_id: str = dlt.config.value,
     folders: List[Dict[str, str]] = dlt.config.value,
-    credentials: Union[
-        GcpOAuthCredentials, GcpServiceAccountCredentials
-    ] = dlt.secrets.value
+    credentials= dlt.secrets.value
 ) -> Generator[DltResource, None, None]:
     """ Source for Google Drive
     """
@@ -33,7 +31,8 @@ def google_drive(
         folder_id: str,
         mime_type: str,
         incremental_cursor=dlt.sources.incremental(
-            "modifiedTime", initial_value="1970-01-01T00:00:00Z"
+            "modifiedTime", initial_value="1970-01-01T00:00:00Z",
+            # on_cursor_value_none='include'
         )
     ):
         """
@@ -66,6 +65,9 @@ def google_drive(
 
         for file in files:
             file_modified_time_str = file.get('modifiedTime')
+            # if not file_modified_time_str:
+            #     logger.warning(f"Skipping file with missing 'modifiedTime': ID {file.get('id')}, Name {file.get('name')}")
+            #     continue
             file_id = file['id']
 
             file_ids.append(file_id)
@@ -102,6 +104,7 @@ def google_drive(
         name="file_metadata",
         write_disposition="replace",
         primary_key="id")
+    
     def get_file_metadata():
         files = []
         for file_id in file_ids:
