@@ -96,13 +96,13 @@ def google_drive(
         yield dlt.resource(
             get_files,
             name=table_name,
-            write_disposition="replace",
+            write_disposition="append",
             primary_key=primary_key
         )(drive_id, folder_id, mime_type)
 
     @dlt.resource(
         name="file_metadata",
-        write_disposition="replace",
+        write_disposition="merge",
         primary_key="id")
     
     def get_file_metadata():
