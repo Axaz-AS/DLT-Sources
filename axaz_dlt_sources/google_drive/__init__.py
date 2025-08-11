@@ -33,13 +33,13 @@ def google_drive(
         folder_id: str,
         mime_type: str,
         incremental_cursor=dlt.sources.incremental(
-            "row_inserted_at", initial_value="1970-01-01T00:00:00Z"
+            "modifiedTime", initial_value="1970-01-01T00:00:00Z"
         )
     ):
         """
         Generator that fetches files from a specific folder.
         dlt will automatically update the incremental state by finding the
-        maximum value of the 'row_inserted_at' column in the yielded data.
+        maximum value of the 'modifiedTime' column in the yielded data.
         """
         last_modified_str = incremental_cursor.last_value
         logger.info(f"Files last modified since: {last_modified_str}")
@@ -65,7 +65,7 @@ def google_drive(
                 f"No parsing function available for MIME type: {mime_type}")
 
         for file in files:
-            file_modified_time_str = file.get('row_inserted_at')
+            file_modified_time_str = file.get('modifiedTime')
             file_id = file['id']
 
             file_ids.append(file_id)
@@ -79,7 +79,7 @@ def google_drive(
             # Add the cursor column to each row. dlt will use this to update the state.
             for row in json_data:
                 row["file_id"] = file_id
-                row["row_inserted_at"] = file_modified_time_str
+                row["modifiedTime"] = file_modified_time_str
 
             yield json_data
 
@@ -100,7 +100,7 @@ def google_drive(
 
     @dlt.resource(
         name="file_metadata",
-        write_disposition="merge",
+        write_disposition="replace",
         primary_key="id")
     def get_file_metadata():
         files = []
