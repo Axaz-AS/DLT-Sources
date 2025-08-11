@@ -65,7 +65,7 @@ def google_drive(
                 f"No parsing function available for MIME type: {mime_type}")
 
         for file in files:
-            file_modified_time_str = file['row_inserted_at']
+            file_modified_time_str = file.get('row_inserted_at')
             file_id = file['id']
 
             file_ids.append(file_id)
