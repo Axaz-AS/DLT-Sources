@@ -16,7 +16,10 @@ logger = logging.getLogger(__name__)
 def google_drive(
     drive_id: str = dlt.config.value,
     folders: List[Dict[str, str]] = dlt.config.value,
-    credentials= dlt.secrets.value
+    # credentials= dlt.secrets.value
+    credentials: Union[
+        GcpOAuthCredentials, GcpServiceAccountCredentials
+    ] = dlt.secrets.value
 ) -> Generator[DltResource, None, None]:
     """ Source for Google Drive
     """
